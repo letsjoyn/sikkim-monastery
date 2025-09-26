@@ -1,1 +1,1 @@
-SIKKIM Monastery
+sikkim Monasteries
