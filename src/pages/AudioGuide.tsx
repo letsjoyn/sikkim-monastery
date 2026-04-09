@@ -260,7 +260,7 @@ const AudioGuide = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
-                <Button size="lg" className="w-full mb-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800" onClick={() => window.open("/downloads/app.apk", "_blank")}>
+                <Button size="lg" className="w-full mb-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800" onClick={() => window.open("http://heritage-tours.vercel.app", "_blank")}>
                   <Smartphone className="h-5 w-5 mr-2" /> Download APK
                 </Button>
                 <p className="text-sm text-muted-foreground">Direct download for Android devices</p>

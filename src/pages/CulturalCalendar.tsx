@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  MapPin, 
-  Users, 
-  Star, 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Calendar } from "../components/ui/calendar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Calendar as CalendarIcon,
+  Clock,
+  MapPin,
+  Users,
+  Star,
   Bell,
   Plus,
   Ticket,
@@ -19,15 +19,16 @@ import {
   CreditCard,
   Download
 } from "lucide-react";
-import { useMode } from "@/components/ModeToggle";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useMode } from "../components/ModeToggle";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Checkbox } from "../components/ui/checkbox";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
+import { DayPicker } from "react-day-picker";
 
 const CulturalCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -41,8 +42,8 @@ const CulturalCalendar = () => {
     {
       id: 1,
       title: "Losar Festival",
-      monastery: "Rumtek Monastery", 
-      date: "2025-09-20",
+      monastery: "Rumtek Monastery",
+      date: "2025-10-03",
       time: "06:00 AM - 06:00 PM",
       type: "Major Festival",
       description: "Tibetan New Year celebration with traditional ceremonies, cham dances, and community gatherings",
@@ -73,7 +74,7 @@ const CulturalCalendar = () => {
       title: "Cham Dance Festival",
       monastery: "Enchey Monastery",
       date: "2025-09-25",
-      time: "10:00 AM - 04:00 PM", 
+      time: "10:00 AM - 04:00 PM",
       type: "Cultural Event",
       description: "Sacred mask dance performances depicting Buddhist teachings and local legends",
       location: "Monastery Courtyard",
@@ -101,6 +102,7 @@ const CulturalCalendar = () => {
   ];
 
   const upcomingEvents = [...defaultEvents, ...userSubmittedEvents];
+  const eventDates = new Set(upcomingEvents.map(event => event.date));
 
   const eventTypes = [
     { id: "all", name: "All Events", count: upcomingEvents.length, color: "default" },
@@ -112,12 +114,12 @@ const CulturalCalendar = () => {
 
   const [selectedType, setSelectedType] = useState("all");
 
-  const filteredEvents = selectedDate 
+  const filteredEvents = selectedDate
     ? upcomingEvents.filter(event => format(new Date(event.date), 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd'))
-    : (selectedType === "all" 
-      ? upcomingEvents 
-      : upcomingEvents.filter(event => 
-          event.type.toLowerCase().includes(selectedType) || 
+    : (selectedType === "all"
+      ? upcomingEvents
+      : upcomingEvents.filter(event =>
+          event.type.toLowerCase().includes(selectedType) ||
           event.tags.some(tag => tag.toLowerCase().includes(selectedType))
         ));
 
@@ -130,15 +132,13 @@ const CulturalCalendar = () => {
 
   const handleSubmitEvent = () => {
     setShowForm(true);
-    scrollToTop(); // Scroll to top when form is opened
-    console.log("Submit New Event button clicked. Displaying form.");
+    scrollToTop();
   };
 
   const handleEventNotifications = () => {
     alert("You are now subscribed to event notifications! 🔔");
-    console.log("Event Notifications button clicked. User subscribed.");
   };
-  
+
   const handleExportCalendar = () => {
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
@@ -147,7 +147,7 @@ ${upcomingEvents.map(event => {
   const startDate = new Date(event.date);
   const startTime = event.time.split(' - ')[0];
   const startDateTime = `${format(startDate, 'yyyyMMdd')}T${startTime.replace(':', '')}00`;
-  
+
   const endDate = new Date(event.date);
   const endTime = event.time.split(' - ')[1];
   const endDateTime = `${format(endDate, 'yyyyMMdd')}T${endTime.replace(':', '')}00`;
@@ -171,17 +171,15 @@ END:VCALENDAR`;
     link.click();
     document.body.removeChild(link);
 
-    console.log("Exporting calendar events as an .ics file.");
     alert("Calendar events have been exported! Check your downloads folder.");
   };
 
   const handleBookNow = (eventId: number) => {
     if (bookedEvents.includes(eventId)) {
       alert("You have already booked this event! 🎉");
-      console.log(`Event ID ${eventId} is already booked.`);
     } else {
       setBookingEventId(eventId);
-      scrollToTop(); // Scroll to top when booking page is opened
+      scrollToTop();
     }
   };
 
@@ -190,7 +188,7 @@ END:VCALENDAR`;
       setBookedEvents((prevBooked) => [...prevBooked, bookingEventId]);
       alert("Payment successful! Your ticket is confirmed. ✅");
       setBookingEventId(null);
-      scrollToTop(); // Scroll to top when booking is confirmed
+      scrollToTop();
     }
   };
 
@@ -239,7 +237,7 @@ END:VCALENDAR`;
     };
     setUserSubmittedEvents((prevEvents) => [...prevEvents, newEvent]);
     setShowForm(false);
-    scrollToTop(); // Scroll to top after form submission
+    scrollToTop();
     alert("Event submitted for review! It has been added to the calendar.");
   };
 
@@ -398,261 +396,288 @@ END:VCALENDAR`;
         </div>
       );
     }
-  
-    if (bookingEventId !== null) {
-      const eventToBook = upcomingEvents.find(event => event.id === bookingEventId);
-      if (!eventToBook) return null;
-  
-      return (
-        <div className="min-h-screen bg-gradient-heritage flex justify-center items-start py-8">
-          <Card className="w-full max-w-2xl mx-auto">
-            <CardHeader>
-              <Button variant="ghost" onClick={() => { setBookingEventId(null); scrollToTop(); }} className="self-start mb-4">
-                <ArrowLeft className="h-4 w-4 mr-2" /> Back to Events
-              </Button>
-              <CardTitle className="flex items-center gap-2">
-                <Ticket className="h-6 w-6" />
-                Book Your Ticket for {eventToBook.title}
-              </CardTitle>
-              <CardDescription>
-                Please enter your details and complete the payment to secure your spot.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-lg font-semibold">
-                  <span>Total Amount:</span>
-                  <span>{eventToBook.price}</span>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input id="fullName" placeholder="John Doe" required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="john.doe@example.com" required />
-                </div>
-  
-                <div className="space-y-4 pt-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" /> Payment Details
-                  </h3>
-                  <div className="space-y-2">
-                    <Label htmlFor="cardNumber">Card Number</Label>
-                    <Input id="cardNumber" placeholder="0000 0000 0000 0000" required />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="expiry">Expiry Date</Label>
-                      <Input id="expiry" placeholder="MM/YY" required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="cvv">CVV</Label>
-                      <Input id="cvv" placeholder="123" required />
-                    </div>
-                  </div>
-                </div>
-  
-                <Button className="w-full mt-6" onClick={handleConfirmBooking}>
-                  Pay {eventToBook.price} and Book
-                </Button>
+
+  if (bookingEventId !== null) {
+    const eventToBook = upcomingEvents.find(event => event.id === bookingEventId);
+    if (!eventToBook) return null;
+
+    return (
+      <div className="min-h-screen bg-gradient-heritage flex justify-center items-start py-8">
+        <Card className="w-full max-w-2xl mx-auto">
+          <CardHeader>
+            <Button variant="ghost" onClick={() => { setBookingEventId(null); scrollToTop(); }} className="self-start mb-4">
+              <ArrowLeft className="h-4 w-4 mr-2" /> Back to Events
+            </Button>
+            <CardTitle className="flex items-center gap-2">
+              <Ticket className="h-6 w-6" />
+              Book Your Ticket for {eventToBook.title}
+            </CardTitle>
+            <CardDescription>
+              Please enter your details and complete the payment to secure your spot.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between text-lg font-semibold">
+                <span>Total Amount:</span>
+                <span>{eventToBook.price}</span>
               </div>
-            </CardContent>
-          </Card>
+
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input id="fullName" placeholder="John Doe" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="john.doe@example.com" required />
+              </div>
+
+              <div className="space-y-4 pt-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <CreditCard className="h-5 w-5" /> Payment Details
+                </h3>
+                <div className="space-y-2">
+                  <Label htmlFor="cardNumber">Card Number</Label>
+                  <Input id="cardNumber" placeholder="0000 0000 0000 0000" required />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="expiry">Expiry Date</Label>
+                    <Input id="expiry" placeholder="MM/YY" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cvv">CVV</Label>
+                    <Input id="cvv" placeholder="123" required />
+                  </div>
+                </div>
+              </div>
+
+              <Button className="w-full mt-6" onClick={handleConfirmBooking}>
+                Pay {eventToBook.price} and Book
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-heritage">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-heading font-bold text-primary mb-4">
+            Events
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Sacred festivals, daily rituals, and cultural events across Sikkim's monasteries
+          </p>
+          <Badge variant="secondary" className="mt-4">
+            {mode === 'tourist' ? 'Tourist Experience' : 'Research Access'} • {upcomingEvents.length} Upcoming Events
+          </Badge>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-1">
+            <Card className="sticky top-24">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CalendarIcon className="h-5 w-5" />
+                  Event Calendar
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Calendar
+  mode="single"
+  selected={selectedDate}
+  onSelect={setSelectedDate}
+  className="rounded-md border"
+  components={{
+    Day: ({ date, ...props }) => {
+      const isSelected =
+        selectedDate &&
+        format(date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd');
+
+      return (
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setSelectedDate(date)}   // ✅ make day clickable
+            className={cn(
+              "w-8 h-8 flex items-center justify-center rounded-full",
+              isSelected && "bg-primary text-white"
+            )}
+            {...props}
+          >
+            {date.getDate()}
+          </button>
+          {eventDates.has(format(date, 'yyyy-MM-dd')) && (
+            <div className="absolute bottom-1 right-4 w-1.5 h-1.5 rounded-full bg-orange-600 border border-orange-800" />
+          )}
         </div>
       );
-    }
-  
-    return (
-      <div className="min-h-screen bg-gradient-heritage">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-heading font-bold text-primary mb-4">
-              Events
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Sacred festivals, daily rituals, and cultural events across Sikkim's monasteries
-            </p>
-            <Badge variant="secondary" className="mt-4">
-              {mode === 'tourist' ? 'Tourist Experience' : 'Research Access'} • {upcomingEvents.length} Upcoming Events
-            </Badge>
-          </div>
-  
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-1">
-              <Card className="sticky top-24">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CalendarIcon className="h-5 w-5" />
-                    Event Calendar
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    className="rounded-md border"
-                  />
-                  
-                  <div className="mt-6 space-y-2">
-                    <h4 className="font-semibold text-sm">Quick Actions</h4>
-                    <div className="space-y-2">
-                      <Button size="sm" className="w-full justify-start" onClick={handleSubmitEvent}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Submit Event
-                      </Button>
-                      <Button size="sm" variant="outline" className="w-full justify-start" onClick={handleEventNotifications}>
-                        <Bell className="h-4 w-4 mr-2" />
-                        Event Notifications
-                      </Button>
-                      <Button size="sm" variant="outline" className="w-full justify-start" onClick={handleExportCalendar}>
-                        <Download className="h-4 w-4 mr-2" />
-                        Export Calendar
-                      </Button>
-                    </div>
+    },
+  }}
+/>
+
+
+                <div className="mt-6 space-y-2">
+                  <h4 className="font-semibold text-sm">Quick Actions</h4>
+                  <div className="space-y-2">
+                    <Button size="sm" className="w-full justify-start" onClick={handleSubmitEvent}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Submit Event
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" onClick={handleEventNotifications}>
+                      <Bell className="h-4 w-4 mr-2" />
+                      Event Notifications
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start" onClick={handleExportCalendar}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Calendar
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-  
-            <div className="lg:col-span-2">
-              <Tabs value={selectedType} onValueChange={setSelectedType} className="space-y-6">
-                {!selectedDate && (
-                  <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 h-auto">
-                    {eventTypes.map((type) => (
-                      <TabsTrigger key={type.id} value={type.id} className="flex flex-col p-3">
-                        <span className="text-xs font-medium">{type.name}</span>
-                        <Badge variant="outline" className="text-xs mt-1">{type.count}</Badge>
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                )}
-  
-                <div className="space-y-6">
-                  {selectedDate && (
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-xl font-heading font-bold text-primary">Events on {format(selectedDate, 'PPP')}</h3>
-                      <Button variant="ghost" onClick={() => setSelectedDate(undefined)}>
-                        <ArrowLeft className="h-4 w-4 mr-2" /> Show All Events
-                      </Button>
-                    </div>
-                  )}
-                  
-                  {filteredEvents.length > 0 ? (
-                    filteredEvents.map((event) => (
-                      <Card key={event.id} className="card-monastery overflow-hidden">
-                        <div className="md:flex">
-                          <div className="md:w-1/3">
-                            <img 
-                              src={event.image} 
-                              alt={event.title}
-                              className="w-full h-48 md:h-full object-cover"
-                            />
-                          </div>
-                          <div className="md:w-2/3">
-                            <CardContent className="p-6">
-                              <div className="flex flex-wrap gap-2 mb-3">
-                                <Badge variant="secondary">{event.type}</Badge>
-                                {event.tags.map((tag, index) => (
-                                  <Badge key={index} variant="outline" className="text-xs">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                              
-                              <h3 className="text-xl font-heading font-bold text-primary mb-2">
-                                {event.title}
-                              </h3>
-                              
-                              <p className="text-sm text-muted-foreground mb-4">
-                                {event.description}
-                              </p>
-  
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-2">
-                                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                                    <span>{event.monastery}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                                    <span>{event.date}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Clock className="h-4 w-4 text-muted-foreground" />
-                                    <span>{event.time}</span>
-                                  </div>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-2">
-                                    <Users className="h-4 w-4 text-muted-foreground" />
-                                    <span>{event.booked}/{event.capacity} participants</span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                                    <span>{event.location}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Star className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-semibold">{event.price}</span>
-                                  </div>
-                                </div>
-                              </div>
-  
-                              <div className="flex gap-3">
-                                <Button className="flex-1" onClick={() => handleBookNow(event.id)}>
-                                  <Ticket className="h-4 w-4 mr-2" />
-                                  {bookedEvents.includes(event.id) ? "Booked!" : (mode === 'researcher' && event.price === "Free (Research Access)" ? "Register" : "Book Now")}
-                                </Button>
-                                <Button variant="outline">
-                                  <Camera className="h-4 w-4 mr-2" />
-                                  Virtual Preview
-                                </Button>
-                                {event.type.includes("Festival") && (
-                                  <Button variant="outline">
-                                    <Music className="h-4 w-4 mr-2" />
-                                    Audio Guide
-                                  </Button>
-                                )}
-                              </div>
-                            </CardContent>
-                          </div>
-                        </div>
-                      </Card>
-                    ))
-                  ) : (
-                    <Card className="p-6 text-center text-muted-foreground">
-                      No events scheduled for {selectedDate ? format(selectedDate, 'PPP') : "that day"}.
-                    </Card>
-                  )}
                 </div>
-              </Tabs>
-  
-              <Card className="mt-8">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Plus className="h-6 w-6" />
-                    Submit Community Event
-                  </CardTitle>
-                  <CardDescription>
-                    Know about an upcoming ceremony or cultural event? Help us keep the calendar complete by submitting event details.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full md:w-auto" onClick={handleSubmitEvent}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Submit New Event
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="lg:col-span-2">
+            <Tabs value={selectedType} onValueChange={setSelectedType} className="space-y-6">
+              {!selectedDate && (
+                <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 h-auto">
+                  {eventTypes.map((type) => (
+                    <TabsTrigger key={type.id} value={type.id} className="flex flex-col p-3">
+                      <span className="text-xs font-medium">{type.name}</span>
+                      <Badge variant="outline" className="text-xs mt-1">{type.count}</Badge>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              )}
+
+              <div className="space-y-6">
+                {selectedDate && (
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-heading font-bold text-primary">Events on {format(selectedDate, 'PPP')}</h3>
+                    <Button variant="ghost" onClick={() => setSelectedDate(undefined)}>
+                      <ArrowLeft className="h-4 w-4 mr-2" /> Show All Events
+                    </Button>
+                  </div>
+                )}
+
+                {filteredEvents.length > 0 ? (
+                  filteredEvents.map((event) => (
+                    <Card key={event.id} className="card-monastery overflow-hidden">
+                      <div className="md:flex">
+                        <div className="md:w-1/3">
+                          <img
+                            src={event.image}
+                            alt={event.title}
+                            className="w-full h-48 md:h-full object-cover"
+                          />
+                        </div>
+                        <div className="md:w-2/3">
+                          <CardContent className="p-6">
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              <Badge variant="secondary">{event.type}</Badge>
+                              {event.tags.map((tag, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+
+                            <h3 className="text-xl font-heading font-bold text-primary mb-2">
+                              {event.title}
+                            </h3>
+
+                            <p className="text-sm text-muted-foreground mb-4">
+                              {event.description}
+                            </p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                                  <span>{event.monastery}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                                  <span>{event.date}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Clock className="h-4 w-4 text-muted-foreground" />
+                                  <span>{event.time}</span>
+                                </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <Users className="h-4 w-4 text-muted-foreground" />
+                                  <span>{event.booked}/{event.capacity} participants</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                                  <span>{event.location}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Star className="h-4 w-4 text-muted-foreground" />
+                                  <span className="font-semibold">{event.price}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                              <Button className="flex-1" onClick={() => handleBookNow(event.id)}>
+                                <Ticket className="h-4 w-4 mr-2" />
+                                {bookedEvents.includes(event.id) ? "Booked!" : (mode === 'researcher' && event.price === "Free (Research Access)" ? "Register" : "Book Now")}
+                              </Button>
+                              <Button variant="outline">
+                                <Camera className="h-4 w-4 mr-2" />
+                                Virtual Preview
+                              </Button>
+                              {event.type.includes("Festival") && (
+                                <Button variant="outline">
+                                  <Music className="h-4 w-4 mr-2" />
+                                  Audio Guide
+                                </Button>
+                              )}
+                            </div>
+                          </CardContent>
+                        </div>
+                      </div>
+                    </Card>
+                  ))
+                ) : (
+                  <Card className="p-6 text-center text-muted-foreground">
+                    No events scheduled for {selectedDate ? format(selectedDate, 'PPP') : "that day"}.
+                  </Card>
+                )}
+              </div>
+            </Tabs>
+
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Plus className="h-6 w-6" />
+                  Submit Community Event
+                </CardTitle>
+                <CardDescription>
+                  Know about an upcoming ceremony or cultural event? Help us keep the calendar complete by submitting event details.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button className="w-full md:w-auto" onClick={handleSubmitEvent}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Submit New Event
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
-    );
-  };
-  
-  export default CulturalCalendar;
+    </div>
+  );
+};
+
+export default CulturalCalendar;
